@@ -58,16 +58,17 @@ router.delete('/:id', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Комментарий не найден' });
     }
 
-    if (comment.username !== req.user.username) {
+    if (comment.user.toString() !== req.user.id) {
       return res.status(403).json({ error: 'Нет прав на удаление' });
     }
 
-    await Comment.findByIdAndDelete(req.params.id);
+    await comment.deleteOne(); // либо await Comment.findByIdAndDelete(req.params.id)
     res.json({ success: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Ошибка сервера' });
   }
 });
+
 
 module.exports = router;
