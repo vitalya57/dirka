@@ -3,7 +3,7 @@ const router = express.Router();
 const Comment = require('../models/Comment');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
-const authMiddleware = require('../middleware/auth');
+
 
 // настройки multer
 const storage = multer.diskStorage({
