@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000';
+const API_URL = 'empowering-prosperity-production-8afe.up.railway.app';
 
 let map;
 let userToken = null;
