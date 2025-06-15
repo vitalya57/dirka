@@ -1,4 +1,4 @@
-const API_URL = 'https://empowering-prosperity-production-8afe.up.railway.app';
+const API_URL = 'https://empowering-prosperity-production-8afe.up.railway.app/';
 
 let map;
 let userToken = null;
@@ -131,14 +131,16 @@ function loadComments() {
     });
 }
 
-function addPlacemark(comment) {
-  const placemark = new ymaps.Placemark(comment.coords, {
-    balloonContent: `<b>${comment.username}</b><br>${comment.text}` +
-    (comment.imageUrl ? `<br><img src="${API_URL}${comment.imageUrl}" width="100" />` : '')  
-  }, {
-    preset: 'islands#dotIcon',
-    visible: map.getZoom() > 12
-  });
+const coords = Array.isArray(comment.coords) ? comment.coords : JSON.parse(comment.coords);
+
+const placemark = new ymaps.Placemark(coords, {
+  balloonContent: `<b>${comment.username}</b><br>${comment.text}` +
+    (comment.imageUrl ? `<br><img src="${API_URL}${comment.imageUrl}" width="100" />` : '')
+}, {
+  preset: 'islands#dotIcon',
+  visible: map.getZoom() > 12
+});
+
 
   map.geoObjects.add(placemark);
 
@@ -146,7 +148,7 @@ function addPlacemark(comment) {
     const visible = map.getZoom() > 12;
     placemark.options.set('visible', visible);
   });
-}
+
 
 
 
@@ -163,9 +165,12 @@ function addCommentToList(comment) {
     <button class="deleteBtn" data-id="${comment._id}">Удалить</button>
   `;
 
-  li.querySelector('.gotoBtn').onclick = () => {
-    map.setCenter(comment.coords, 15, { duration: 500 });
-  };
+const coords = Array.isArray(comment.coords) ? comment.coords : JSON.parse(comment.coords);
+
+li.querySelector('.gotoBtn').onclick = () => {
+  map.setCenter(coords, 15, { duration: 500 });
+};
+
 
   const delBtn = li.querySelector('.deleteBtn');
   if (comment.username !== userName) delBtn.style.display = 'none';
