@@ -1,4 +1,4 @@
-const API_URL = 'empowering-prosperity-production-8afe.up.railway.app';
+const API_URL = 'https://empowering-prosperity-production-8afe.up.railway.app/';
 
 let map;
 let userToken = null;
