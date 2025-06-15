@@ -1,3 +1,4 @@
+// === CONFIG ===
 const API_URL = 'https://empowering-prosperity-production-8afe.up.railway.app';
 
 let map;
@@ -5,6 +6,7 @@ let userToken = null;
 let userName = null;
 let selectedCoords = null;
 
+// === DOM EVENTS ===
 document.getElementById('btnRegister').onclick = register;
 document.getElementById('btnLogin').onclick = login;
 document.getElementById('logoutBtn').onclick = logout;
@@ -14,7 +16,7 @@ document.getElementById('addCommentBtn').onclick = (event) => {
   addComment();
 };
 
-
+// === AUTH ===
 function showAuthError(text) {
   document.getElementById('authError').innerText = text;
 }
@@ -64,6 +66,7 @@ function logout() {
   if (map) map.destroy();
 }
 
+// === INIT ===
 function initApp() {
   document.getElementById('auth').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
@@ -83,6 +86,7 @@ function initApp() {
   });
 }
 
+// === COMMENT FORM ===
 function toggleCommentForm(show) {
   const form = document.getElementById('commentForm');
   form.style.display = show ? 'block' : 'none';
@@ -93,6 +97,7 @@ function toggleCommentForm(show) {
   }
 }
 
+// === COMMENT ===
 async function addComment() {
   const text = document.getElementById('commentText').value.trim();
   const imageFile = document.getElementById('commentImage').files[0];
@@ -126,21 +131,22 @@ function loadComments() {
   fetch(`${API_URL}/comments`)
     .then(res => res.json())
     .then(comments => {
-      comments.forEach(addPlacemark);
-      comments.forEach(addCommentToList);
+      clearCommentsList();
+      comments.forEach(comment => {
+        addCommentToList(comment);
+        addPlacemark(comment);
+      });
     });
 }
 
-const coords = Array.isArray(comment.coords) ? comment.coords : JSON.parse(comment.coords);
-
-const placemark = new ymaps.Placemark(coords, {
-  balloonContent: `<b>${comment.username}</b><br>${comment.text}` +
-    (comment.imageUrl ? `<br><img src="${API_URL}${comment.imageUrl}" width="100" />` : '')
-}, {
-  preset: 'islands#dotIcon',
-  visible: map.getZoom() > 12
-});
-
+function addPlacemark(comment) {
+  const coords = Array.isArray(comment.coords) ? comment.coords : JSON.parse(comment.coords);
+  const placemark = new ymaps.Placemark(coords, {
+    balloonContent: `<b>${comment.username}</b><br>${comment.text}` +
+      (comment.imageUrl ? `<br><img src="${API_URL}${comment.imageUrl}" width="100" />` : '')
+  }, {
+    preset: 'islands#dotIcon'
+  });
 
   map.geoObjects.add(placemark);
 
@@ -148,16 +154,13 @@ const placemark = new ymaps.Placemark(coords, {
     const visible = map.getZoom() > 12;
     placemark.options.set('visible', visible);
   });
-
-
-
-
+}
 
 function addCommentToList(comment) {
-  console.log('Добавлен комментарий:', comment); // <--- добавь это
-
   const ul = document.getElementById('commentsList');
   const li = document.createElement('li');
+  const coords = Array.isArray(comment.coords) ? comment.coords : JSON.parse(comment.coords);
+
   li.innerHTML = `
     <b>${comment.username}</b>: ${comment.text}
     ${comment.imageUrl ? `<br><img src="${API_URL}${comment.imageUrl}" width="100"/>` : ''}
@@ -165,12 +168,9 @@ function addCommentToList(comment) {
     <button class="deleteBtn" data-id="${comment._id}">Удалить</button>
   `;
 
-const coords = Array.isArray(comment.coords) ? comment.coords : JSON.parse(comment.coords);
-
-li.querySelector('.gotoBtn').onclick = () => {
-  map.setCenter(coords, 15, { duration: 500 });
-};
-
+  li.querySelector('.gotoBtn').onclick = () => {
+    map.setCenter(coords, 15, { duration: 500 });
+  };
 
   const delBtn = li.querySelector('.deleteBtn');
   if (comment.username !== userName) delBtn.style.display = 'none';
@@ -180,7 +180,6 @@ li.querySelector('.gotoBtn').onclick = () => {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${userToken}` }
     });
-    clearCommentsList();
     loadComments();
   };
 
