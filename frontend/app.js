@@ -1,4 +1,4 @@
-// === CONFIG ===
+
 const API_URL = 'https://empowering-prosperity-production-8afe.up.railway.app';
 
 let map;
@@ -6,7 +6,7 @@ let userToken = null;
 let userName = null;
 let selectedCoords = null;
 
-// === DOM EVENTS ===
+
 document.getElementById('btnRegister').onclick = register;
 document.getElementById('btnLogin').onclick = login;
 document.getElementById('logoutBtn').onclick = logout;
@@ -16,7 +16,7 @@ document.getElementById('addCommentBtn').onclick = (event) => {
   addComment();
 };
 
-// === AUTH ===
+
 function showAuthError(text) {
   document.getElementById('authError').innerText = text;
 }
@@ -66,7 +66,7 @@ function logout() {
   if (map) map.destroy();
 }
 
-// === INIT ===
+
 function initApp() {
   document.getElementById('auth').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
@@ -86,7 +86,7 @@ function initApp() {
   });
 }
 
-// === COMMENT FORM ===
+
 function toggleCommentForm(show) {
   const form = document.getElementById('commentForm');
   form.style.display = show ? 'block' : 'none';
@@ -97,7 +97,7 @@ function toggleCommentForm(show) {
   }
 }
 
-// === COMMENT ===
+
 async function addComment() {
   const text = document.getElementById('commentText').value.trim();
   const imageFile = document.getElementById('commentImage').files[0];
