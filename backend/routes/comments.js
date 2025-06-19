@@ -1,16 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const Comment = require('../models/Comment'); // Убедись, что модель Comment поддерживает массив imageUrls
+const Comment = require('../models/Comment');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
-const fs = require('fs'); // Для удаления файлов при удалении комментария
-const path = require('path'); // Для работы с путями
+const fs = require('fs');
+const path = require('path');
 
-// настройки multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadPath = 'uploads/'; // Путь относительно корня проекта
-        // Создаем папку, если она не существует
+        const uploadPath = 'uploads/';
         if (!fs.existsSync(uploadPath)) {
             fs.mkdirSync(uploadPath, { recursive: true });
         }
@@ -18,7 +16,6 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname)
 });
-// Изменяем с upload.single на upload.array и указываем имя поля 'images'
 const upload = multer({ storage });
 
 function authMiddleware(req, res, next) {
@@ -42,13 +39,10 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Изменяем с upload.single('image') на upload.array('images')
 router.post('/', authMiddleware, upload.array('images'), async (req, res) => {
     try {
         let { text, coords } = req.body;
-        // Проверяем наличие текста и координат
         if (!text || !coords) {
-            // Если файлы были загружены, но произошла ошибка, удаляем их
             if (req.files && req.files.length > 0) {
                 req.files.forEach(file => {
                     const filePath = path.join(__dirname, '..', file.path);
@@ -62,7 +56,6 @@ router.post('/', authMiddleware, upload.array('images'), async (req, res) => {
         
         if (typeof coords === 'string') coords = JSON.parse(coords);
 
-        // Собираем массив путей к загруженным файлам
         const imageUrls = req.files ? req.files.map(file => `/uploads/${file.filename}`) : [];
 
         const comment = new Comment({
@@ -70,14 +63,13 @@ router.post('/', authMiddleware, upload.array('images'), async (req, res) => {
             username: req.user.username,
             text,
             coords,
-            imageUrls: imageUrls // Сохраняем массив URL-ов
+            imageUrls: imageUrls
         });
 
         await comment.save();
         res.json(comment);
     } catch (e) {
         console.error(e);
-        // Дополнительная очистка, если ошибка произошла после multer, но до сохранения в БД
         if (req.files && req.files.length > 0) {
             req.files.forEach(file => {
                 const filePath = path.join(__dirname, '..', file.path);
@@ -96,11 +88,8 @@ router.delete('/:id', authMiddleware, async (req, res) => {
         if (!comment) return res.status(404).json({ error: 'Comment not found' });
         if (comment.user.toString() !== req.user.id) return res.status(403).json({ error: 'Forbidden: You can only delete your own comments' });
 
-        // Удаляем связанные файлы с диска
         if (comment.imageUrls && comment.imageUrls.length > 0) {
             comment.imageUrls.forEach(imageUrl => {
-                // Извлекаем путь к файлу относительно корня проекта
-                // `path.join(__dirname, '..', imageUrl)` - корректный путь, так как `comments.js` находится в `backend/`
                 const filePath = path.join(__dirname, '..', imageUrl);
                 fs.unlink(filePath, (err) => {
                     if (err) console.error(`Ошибка при удалении файла ${filePath}:`, err);
@@ -110,7 +99,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
         }
 
         await Comment.findByIdAndDelete(req.params.id);
-        res.status(204).end(); // 204 No Content - успешное удаление без тела ответа
+        res.status(204).end();
     } catch (e) {
         console.error(e);
         res.status(500).json({ error: 'Server error when deleting comment' });
