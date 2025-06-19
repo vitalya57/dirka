@@ -12,10 +12,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 👉 Раздача фронтенда из папки frontend
+
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
-// 👉 Раздача загруженных файлов (из backend/uploads)
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/auth', authRoutes);
