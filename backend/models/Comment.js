@@ -5,12 +5,12 @@ const commentSchema = new mongoose.Schema({
     username: { type: String, required: true },
     text: { type: String, required: true },
     coords: { type: [Number], required: true },
-    // Изменяем с 'imageUrl: { type: String, default: null }'
-    // на 'imageUrls: { type: [String], default: [] }' для поддержки массива строк
+  
+    
     imageUrls: { 
-        type: [String], // Массив строк для хранения путей к нескольким изображениям
-        default: []    // По умолчанию это пустой массив
+        type: [String], 
+        default: []    
     }
-}, { timestamps: true }); // timestamps: true добавляет createdAt и updatedAt автоматически
+}, { timestamps: true }); 
 
 module.exports = mongoose.model('Comment', commentSchema);
