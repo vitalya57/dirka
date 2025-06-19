@@ -14,9 +14,8 @@ document.getElementById('addCommentBtn').onclick = (event) => {
     addComment();
 };
 
-// Добавляем слушатель событий для input[type="file"] для предпросмотра
 document.getElementById('commentImage').addEventListener('change', function(event) {
-    clearImagePreview(); // Очищаем предыдущий предпросмотр
+    clearImagePreview();
     const files = event.target.files;
     const previewContainer = document.getElementById('selectedImagesPreview');
 
@@ -26,11 +25,11 @@ document.getElementById('commentImage').addEventListener('change', function(even
             if (file.type.startsWith('image/')) {
                 const img = document.createElement('img');
                 img.src = URL.createObjectURL(file);
-                img.style.width = '50px'; // Миниатюра для предпросмотра
+                img.style.width = '50px';
                 img.style.height = '50px';
                 img.style.objectFit = 'cover';
                 img.style.marginRight = '5px';
-                img.onload = () => URL.revokeObjectURL(img.src); // Освобождаем память
+                img.onload = () => URL.revokeObjectURL(img.src);
                 previewContainer.appendChild(img);
             }
         }
@@ -106,10 +105,9 @@ function initApp() {
     });
 }
 
-// Новая функция для очистки предпросмотра изображений
 function clearImagePreview() {
     const previewContainer = document.getElementById('selectedImagesPreview');
-    previewContainer.innerHTML = ''; // Очищаем контейнер
+    previewContainer.innerHTML = '';
 }
 
 function toggleCommentForm(show) {
@@ -117,24 +115,21 @@ function toggleCommentForm(show) {
     form.style.display = show ? 'block' : 'none';
     if (!show) {
         document.getElementById('commentText').value = '';
-        document.getElementById('commentImage').value = ''; // Сбрасываем выбранные файлы
-        clearImagePreview(); // Очищаем предпросмотр
+        document.getElementById('commentImage').value = '';
+        clearImagePreview();
         selectedCoords = null;
     }
 }
 
 async function addComment() {
     const text = document.getElementById('commentText').value.trim();
-    // Теперь получаем все выбранные файлы
-    const imageFiles = document.getElementById('commentImage').files; // Это FileList
+    const imageFiles = document.getElementById('commentImage').files;
     if (!text || !selectedCoords) return;
 
     const formData = new FormData();
     formData.append('text', text);
     formData.append('coords', JSON.stringify(selectedCoords));
 
-    // Добавляем каждый файл под одним и тем же именем 'images'
-    // На бэкенде multer будет ожидать массив
     for (let i = 0; i < imageFiles.length; i++) {
         formData.append('images', imageFiles[i]);
     }
@@ -143,7 +138,6 @@ async function addComment() {
         method: 'POST',
         headers: {
             Authorization: `Bearer ${userToken}`
-            // 'Content-Type' не устанавливаем, FormData сама установит правильный boundary
         },
         body: formData
     });
@@ -168,13 +162,11 @@ function loadComments() {
         });
 }
 
-// Обнови функцию addPlacemark, чтобы она могла обрабатывать массив URL-ов
 function addPlacemark(comment) {
     const coords = Array.isArray(comment.coords) ? comment.coords : JSON.parse(comment.coords);
 
     let balloonContent = `<b>${comment.username}</b><br>${comment.text}`;
 
-    // Проверяем, есть ли изображения и добавляем их в балун
     if (comment.imageUrls && comment.imageUrls.length > 0) {
         comment.imageUrls.forEach(url => {
             balloonContent += `<br><img src="${API_URL}${url}" width="100" style="margin-top: 5px;"/>`;
@@ -204,10 +196,8 @@ function addCommentToList(comment) {
     const li = document.createElement('li');
 
     let imageHtml = '';
-    // Проверяем, есть ли изображения и их количество
     if (comment.imageUrls && comment.imageUrls.length > 0) {
         const numImages = comment.imageUrls.length;
-        // Создаем кнопку/ссылку для отображения фото
         imageHtml = `
             <span class="image-toggle" style="cursor: pointer; color: blue; text-decoration: underline;">
                 (фото: ${numImages})
@@ -231,11 +221,10 @@ function addCommentToList(comment) {
         map.setCenter(coords, 15, { duration: 500 });
     };
 
-    // Добавляем обработчик для кнопки "фото"
     const imageToggle = li.querySelector('.image-toggle');
     if (imageToggle) {
         imageToggle.onclick = function() {
-            const gallery = this.nextElementSibling; // Следующий элемент - это галерея
+            const gallery = this.nextElementSibling;
             if (gallery.style.display === 'none') {
                 gallery.style.display = 'block';
             } else {
@@ -248,8 +237,6 @@ function addCommentToList(comment) {
     if (comment.username !== userName) delBtn.style.display = 'none';
     delBtn.onclick = async (e) => {
         e.stopPropagation();
-        // Внимание: при удалении комментария, возможно, стоит удалять и файлы
-        // Это нужно реализовать на бэкенде. (Это уже сделано в предыдущем ответе для backend/comments.js)
         await fetch(`${API_URL}/comments/${comment._id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${userToken}` }
