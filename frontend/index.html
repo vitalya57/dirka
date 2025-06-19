@@ -104,9 +104,10 @@
         <button id="toggleSidebarBtn">Комментарии</button>
         <div id="map"></div>
 
-        <div id="commentForm" style="display:none;">
+      <div id="commentForm" style="display:none;">
           <textarea id="commentText" placeholder="Комментарий"></textarea>
-          <input type="file" id="commentImage" accept="image/*" />
+          <input type="file" id="commentImage" accept="image/*" multiple />
+          <div id="selectedImagesPreview" style="margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px;"></div>
           <button id="addCommentBtn">Добавить комментарий</button>
           <button id="closeCommentFormBtn">Закрыть</button>
         </div>
