@@ -1,20 +1,47 @@
 body {
     font-family: Arial, sans-serif;
     margin: 10px;
-  }
-  #auth, #app {
+}
+#auth, #app {
     max-width: 600px;
     margin: auto;
-  }
-  #commentForm textarea {
+}
+#commentForm textarea {
     width: 100%;
     resize: vertical;
-  }
-  #commentsList li {
+}
+#commentsList li {
     cursor: pointer;
     margin: 5px 0;
-  }
-  #commentsList li button {
+    /* Добавляем эти свойства для переноса текста комментария */
+    word-wrap: break-word; /* Для старых браузеров */
+    overflow-wrap: break-word; /* Современный стандарт */
+    /* Убедимся, что li занимает всю доступную ширину, если это необходимо */
+    width: 100%; 
+    box-sizing: border-box; /* Для корректного учета padding/border в ширине */
+}
+#commentsList li button {
     margin-left: 10px;
-  }
-  
+}
+
+/* Также, если текст внутри сайдбара в целом может быть длинным,
+   стоит добавить и для него, но для комментариев в li это основное */
+#sidebar {
+    width: 300px;
+    background: #f4f4f4;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    /* Добавляем для общего переноса текста в сайдбаре */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+/* Если у тебя есть класс .commentItem, то и для него тоже */
+.commentItem {
+    margin-bottom: 10px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    width: 100%;
+    box-sizing: border-box;
+}
