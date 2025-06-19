@@ -200,7 +200,7 @@ function addCommentToList(comment) {
         const numImages = comment.imageUrls.length;
         imageHtml = `
             <span class="image-toggle" style="cursor: pointer; color: blue; text-decoration: underline;">
-                (фото: ${numImages})
+                (Фото: ${numImages})
             </span>
             <div class="image-gallery" style="display: none; margin-top: 5px;">
                 ${comment.imageUrls.map(url => `<img src="${API_URL}${url}" width="100" style="margin-right: 5px; margin-bottom: 5px;"/>`).join('')}
